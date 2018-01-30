@@ -3,7 +3,9 @@
    // Use hover for the description of the existing attributes
    // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
    "version": "0.2.0",
+   "debugServer" : 41912,
    "configurations": [
+
         {
             "name": ".NET Core Launch (console)",
             "type": "coreclr",
@@ -23,6 +25,12 @@
             "type": "coreclr",
             "request": "attach",
             "processId": "${command:pickProcess}"
+        },
+        {
+            "name": "MoonSharp Attach",
+            "type": "moonsharp-debug",
+            "request": "attach",
+            "HELP": "Please set 'debugServer':41912 (or whatever port you ar connecting to) right after the 'version' field in this json."
         }
     ]
 }
