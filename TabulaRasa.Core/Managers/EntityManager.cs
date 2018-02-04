@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
-using TabulaRasa.Core.Contracts;
-using TabulaRasa.Core.Objects;
+using TabulaRasa.Services.Contracts;
+using TabulaRasa.Services.Objects;
 
-namespace TabulaRasa.Core.Managers
+namespace TabulaRasa.Services.Managers
 {
     public class EntityManager : IEntityManager
     {
@@ -22,8 +22,9 @@ namespace TabulaRasa.Core.Managers
             _nextId = 1;
             while (_usedIds.Contains(_nextId))
                 _nextId++;
-            var ent = new Entity(_nextId, name ?? $"Entity #{_nextId}");
+            var ent = new Entity(_nextId, name ?? $"entity #{_nextId}");
             _entities.Add(ent.Id, ent);
+            _usedIds.Add(_nextId);
             return ent;
         }
 

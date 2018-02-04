@@ -1,4 +1,4 @@
-namespace TabulaRasa.Core
+namespace TabulaRasa.Services
 {
     public class Game
     {

@@ -1,9 +1,9 @@
-using TabulaRasa.Core.Objects;
+using TabulaRasa.Services.Objects;
 
-namespace TabulaRasa.Core.Contracts
+namespace TabulaRasa.Services.Contracts
 {
     public interface IComponentManager
     {
-        Component CreateComponent(string componentName, params string[] traits);
+        Component CreateComponent(string componentName, string traitData);
     }
 }

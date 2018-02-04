@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using MoonSharp.Interpreter;
-using MoonSharp.VsCodeDebugger;
-using TabulaRasa.Core.Actions;
-using TabulaRasa.Core.Contracts;
-using TabulaRasa.Core.Helpers;
-using TabulaRasa.Core.Managers;
-using TabulaRasa.Core.Objects;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using TabulaRasa.Data;
+using TabulaRasa.Services;
 
 namespace TabulaRasa.Test
 {
@@ -15,48 +10,77 @@ namespace TabulaRasa.Test
     {
         static void Main(string[] args)
         {
-            IScriptManager scripts = new ScriptManager();
-            IComponentManager components = new ComponentManager(scripts);
-            IEntityManager entities = new EntityManager();
-            IActionManager actions = new ActionManager();
+            var config = new ConfigurationBuilder()
+                .AddJsonFile("appSettings.json", true, true)
+                .Build();
 
-            GameWrapper g = new GameWrapper(entities, components, actions);
+            var serviceProvider = new ServiceCollection()
+                .AddEntityFrameworkNpgsql()
+                .AddDbContext<TRDbContext>(options => options.UseNpgsql(config.GetConnectionString("default")))
+                .AddSingleton<IGame, Game>()
+                .AddTransient<IEntityService, EntityService>()
+                .AddTransient<IScriptService, ScriptService>()
+                .AddTransient<IComponentService, ComponentService>()
+                .AddTransient<ITemplateService, TemplateService>()
+                .AddTransient<ITimedActionService, TimedActionService>()
+                .AddTransient<ILocaleService, LocaleService>()
+                .BuildServiceProvider();
 
-            scripts.RegisterObjectType<Entity>();
-            scripts.RegisterObjectType<Component>();
-            scripts.RegisterObjectType<GameWrapper>();
-            scripts.RegisterObjectType<TraitSet>();
-            scripts.RegisterObjectType<Script>();
-            scripts.RegisterObjectType<GameAction>();
-            scripts.RegisterObjectType<TimedGameAction>();
-
-            var e = g.CreateEntity("snake");
-            g.HandleAction(new GameAction("addcomponent", e.Id, "health", "maxHP|150", "currHP|22"));
-            g.HandleAction(new GameAction("addcomponent", e.Id, "invulnerability"));
-            g.HandleAction(new GameAction("takedamage", 0, e.Id, "300"));
-            // g.HandleAction(new GameAction("messageentity", 0, e.Id, "health", "takedamage", "300"));
-            // g.HandleAction(new GameAction("messagecomponent", 0, e.Id, "health", "takedamage", "300"));
-            // g.HandleAction(new GameAction("messagecomponent", 0, e.Id, "health", "heal", "325"));
-            g.HandleAction(new GameAction("heal", 0, e.Id, "325"));
-            g.HandleAction(new GameAction("removecomponent", e.Id, "health"));
+            var game = serviceProvider.GetService<IGame>();
+            game.DoStuff();
         }
 
-        
-        /* public static void AssignComponent(Entity gameObj, string componentName, Dictionary<string, string> defaults)
-        {
-            var script = new Script();
-            script.Globals["Component"] = typeof(Component);
-            //script.Globals["Trait"] = typeof(AiGTrait);
-            script.Globals["TraitSet"] = typeof(TraitSet);
-            script.Globals["Entity"] = typeof(Entity);
-            script.DoString(_components[componentName]);
 
-            var args = new Dictionary<string, string>();
-            foreach (var trait in defaults)
-                args.Add(trait.Name, trait.Value);
+        //static void Main(string[] args)
+        //{
+        //    IScriptManager scripts = new ScriptManager();
+        //    IComponentManager components = new ComponentManager(scripts);
+        //    IEntityManager entities = new EntityManager();
+        //    IActionManager actions = new ActionManager();
+        //    ILocationManager locations = new LocationManager();
 
-            var cmp = (AiGComponent)script.Call(script.Globals["init"], entity, script, args).UserData.Object;
-            entity.Components.Add(cmp);
-        } */
+
+
+        //    GameWrapper g = new GameWrapper(entities, components, actions, locations);
+
+        //    scripts.RegisterObjectType<Entity>();
+        //    scripts.RegisterObjectType<Component>();
+        //    scripts.RegisterObjectType<GameWrapper>();
+        //    scripts.RegisterObjectType<TraitSet>();
+        //    scripts.RegisterObjectType<Script>();
+        //    scripts.RegisterObjectType<GameAction>();
+        //    scripts.RegisterObjectType<TimedGameAction>();
+
+
+        //    //create entities -- these should be done through game actions, not function calls on the gamewrapper.
+        //    //EVERYTHING should be through actions and the gamewrapper processing them
+        //    var snake = g.CreateEntity("snake");
+        //    g.HandleAction(new GameAction("addcomponent", snake.Id, "health", @"{""maxHP"":150, ""currHP"":22}"));
+
+        //    var angel = g.CreateEntity("angel");
+        //    g.HandleAction(new GameAction("addcomponent", angel.Id, "health", @"{""maxHP"":300, ""currHP"":300}"));
+        //    g.HandleAction(new GameAction("addcomponent", angel.Id, "angel-ai"));
+
+        //    //stick em in a room -- through game actions, of course!!!
+
+            
+
+
+
+
+        //    //g.HandleAction(new GameAction("addcomponent", e.Id, "invulnerability"));
+        //    actions.Add(new TimedGameAction(DateTime.Now.AddSeconds(5).ToString(), "do-takedamage", 0, snake.Id, "300", "entity"));
+        //    actions.Add(new TimedGameAction(DateTime.Now.AddSeconds(7).ToString(), "do-heal", angel.Id, snake.Id, "500", "entity"));
+        //    // g.HandleAction(new GameAction("messageentity", 0, e.Id, "health", "takedamage", "300"));
+        //    // g.HandleAction(new GameAction("messagecomponent", 0, e.Id, "health", "takedamage", "300"));
+        //    // g.HandleAction(new GameAction("messagecomponent", 0, e.Id, "health", "heal", "325"));
+        //    //g.HandleAction(new GameAction("heal", 0, e.Id, "325"));
+        //    //g.HandleAction(new GameAction("removecomponent", e.Id, "health"));
+
+        //    while (g.IsRunning)
+        //    {
+
+        //    }
+        //}
     }
 }

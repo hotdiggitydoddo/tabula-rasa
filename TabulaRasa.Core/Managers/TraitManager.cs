@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace TabulaRasa.Core.Managers
+namespace TabulaRasa.Services.Managers
 {
     public class TraitManager
     {

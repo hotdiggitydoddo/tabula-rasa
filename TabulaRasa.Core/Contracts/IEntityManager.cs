@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using TabulaRasa.Core.Objects;
+using TabulaRasa.Services.Objects;
 
-namespace TabulaRasa.Core.Contracts
+namespace TabulaRasa.Services.Contracts
 {
     public interface IEntityManager
     {

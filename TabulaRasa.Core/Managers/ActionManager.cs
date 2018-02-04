@@ -1,9 +1,9 @@
 using System;
 using Priority_Queue;
-using TabulaRasa.Core.Actions;
-using TabulaRasa.Core.Contracts;
+using TabulaRasa.Services.Contracts;
+using TabulaRasa.Services.Objects;
 
-namespace TabulaRasa.Core.Managers
+namespace TabulaRasa.Services.Managers
 {
     public class ActionManager : IActionManager
     {

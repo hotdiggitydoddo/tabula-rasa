@@ -1,19 +1,25 @@
 local this = Component;
 local game = GameWrapper;
--- Traits
-local maxHP;
-local currHP;
+
+-- default traits
+local maxHp;
+local currHp;
 
 function init (script, defaults)
-    this = Component.__new("health", 100, script, "takedamage", "heal");
-    maxHp = defaults["maxHP"];
-    currHp = defaults["currHP"];
+    this = Component.__new("health", 100, script, "do-takedamage", "do-heal");
+    maxHp = defaults["maxHp"];
+    currHp = defaults["currHp"];
 	return this;
 end
 
 function onAdded()
-    this.Owner.Traits["maxHp"] = maxHp;
-    this.Owner.Traits["currHp"] = currHp;
+	print(maxHp);
+	if (this.Owner.Traits["maxHp"] == nil) then
+		this.Owner.Traits["maxHp"] = maxHp;
+	end
+	if (this.Owner.Traits["currHp"] == nil) then
+		this.Owner.Traits["currHp"] = currHp;
+	end
 end
 
 function onRemoved()
@@ -22,19 +28,20 @@ function onRemoved()
 end
 
 function handleAction (gameAction)
-    actionType = gameAction.Type;
-    print(actionType)
-    if (actionType == "takedamage") then
-        this.Owner.Traits["currHp"] = this.Owner.Traits["currHp"] - gameAction.Args[1];
-        if (tonumber(this.Owner.Traits["currHp"]) <= 0) then
-            print(this.Owner.Id)
-            print(this.Owner.Traits["name"])
-            game.Instance.HandleAction(GameAction.__new("entitydead", this.Owner.Id, this.Owner.Traits["name"]))
-        end
-    elseif (actionType == "heal") then
-        this.Owner.Traits["currHp"] = this.Owner.Traits["currHp"] + gameAction.Args[1];
-        if (this.Owner.Traits["currHp"] > this.Owner.Traits["maxHp"]) then
-            this.Owner.Traits["currHp"] = this.Owner.Traits["maxHp"];
-        end
-    end
+	if (gameAction.Type == "do-takedamage") then
+		this.Owner.Traits["currHp"] = this.Owner.Traits["currHp"] - gameAction.Value;
+		if (tonumber(this.Owner.Traits["currHp"]) <= 0) then
+			this.Owner.Traits["currHp"] = 0;
+			print (this.Owner.Name .. " is dead!!!");
+			game.Instance.HandleAction(GameAction.__new("entitydead", this.Owner.Id, this.Owner.Traits["name"]))
+		end
+	elseif (gameAction.Type == "do-heal") then
+		print (this.Owner.Name .. " is healed!!!");
+		this.Owner.Traits["currHp"] = this.Owner.Traits["currHp"] + gameAction.Value;
+		print(this.Owner.Name .. " was healed by " .. gameAction.SenderId);
+		if (this.Owner.Traits["currHp"] > this.Owner.Traits["maxHp"]) then
+			this.Owner.Traits["currHp"] = this.Owner.Traits["maxHp"];
+		end
+		print(this.Owner.Name .. " hp: " .. this.Owner.Traits["currHp"] .. "/" .. this.Owner.Traits["maxHp"]);
+	end
 end

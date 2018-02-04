@@ -1,7 +1,7 @@
 using System;
-using TabulaRasa.Core.Actions;
+using TabulaRasa.Services.Objects;
 
-namespace TabulaRasa.Core.Contracts
+namespace TabulaRasa.Services.Contracts
 {
     public interface IActionManager
     {
