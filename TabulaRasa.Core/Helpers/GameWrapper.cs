@@ -94,7 +94,7 @@ namespace TabulaRasa.Services.Helpers
 
             var action = new GameAction("spawnentity", entityId);
             room.HandleAction(action);
-            room.Region.HandleAction(action);
+           // room.Region.HandleAction(action);
         }
 
         private void AddComponentToEntity(GameAction action)

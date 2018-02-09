@@ -1,8 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Threading;
 using TabulaRasa.Data;
 using TabulaRasa.Services;
+using TabulaRasa.Test.Admin;
 
 namespace TabulaRasa.Test
 {
@@ -27,7 +30,14 @@ namespace TabulaRasa.Test
                 .BuildServiceProvider();
 
             var game = serviceProvider.GetService<IGame>();
-            game.DoStuff();
+            game.Start();
+
+            var admin = new AdminConsole(game);
+
+            while (game.IsRunning)
+            {
+                admin.HandleInput(Console.ReadLine());
+            }
         }
 
 
